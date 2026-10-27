@@ -1,0 +1,2 @@
+import { siteOrigin } from '@/lib/site-origin.server';
+export function loader({request}:{request:Request}) { const origin=siteOrigin(request);return new Response(`# Project Mania\n\nCustomized educational and creative project inquiries.\n\n- [Projects](${origin}/projects): Real team-uploaded project catalogue.\n- [Contact](${origin}/contact): Contact the team.`,{headers:{'Content-Type':'text/plain; charset=utf-8'}});}

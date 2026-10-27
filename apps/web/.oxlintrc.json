@@ -1,0 +1,103 @@
+{
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"plugins": ["typescript", "react", "import"],
+	"jsPlugins": ["./horizons-oxlint-plugin.mjs"],
+	"categories": {
+		"correctness": "off"
+	},
+	"env": {
+		"browser": true,
+		"es2024": true
+	},
+	"globals": {
+		"React": "readonly",
+		"Intl": "readonly"
+	},
+	"ignorePatterns": [
+		"node_modules/**",
+		"dist/**",
+		"build/**",
+		".react-router/**",
+		"plugins/**",
+		"horizons-oxlint-plugin.mjs",
+		"eslint.unicode-escapes-plugin.mjs",
+		"**/*.jsx",
+		"src/components/ui/**",
+		"src/hooks/use-toast.ts",
+		"vite.config.ts",
+		"react-router.config.ts"
+	],
+	"overrides": [
+		{
+			"files": ["**/*.{ts,tsx}"],
+			"rules": {
+				"no-var": "error",
+				"prefer-const": ["error", { "destructuring": "any", "ignoreReadBeforeAssign": false }],
+				"prefer-rest-params": "error",
+				"prefer-spread": "error",
+				"no-array-constructor": "error",
+				"no-unused-expressions": ["error", { "allowShortCircuit": false, "allowTaggedTemplates": false, "allowTernary": false }],
+				"typescript/ban-ts-comment": "error",
+				"typescript/no-duplicate-enum-values": "error",
+				"typescript/no-empty-object-type": "error",
+				"typescript/no-extra-non-null-assertion": "error",
+				"typescript/no-misused-new": "error",
+				"typescript/no-namespace": "error",
+				"typescript/no-non-null-asserted-optional-chain": "error",
+				"typescript/no-require-imports": "error",
+				"typescript/no-this-alias": "error",
+				"typescript/no-unnecessary-type-constraint": "error",
+				"typescript/no-unsafe-declaration-merging": "error",
+				"typescript/no-unsafe-function-type": "error",
+				"typescript/no-wrapper-object-types": "error",
+				"typescript/prefer-as-const": "error",
+				"typescript/prefer-namespace-keyword": "error",
+				"typescript/triple-slash-reference": "error",
+				"react/jsx-key": "error",
+				"react/jsx-no-duplicate-props": "error",
+				"react/jsx-no-target-blank": "error",
+				"react/jsx-no-undef": "error",
+				"react/no-children-prop": "error",
+				"react/no-danger-with-children": "error",
+				"react/no-direct-mutation-state": "error",
+				"react/no-find-dom-node": "error",
+				"react/no-is-mounted": "error",
+				"react/no-render-return-value": "error",
+				"react/no-string-refs": "error",
+				"react/no-unknown-property": "error",
+				"react/no-unsafe": ["error", { "checkAliases": true }],
+				"react/require-render-return": "error",
+				"react/rules-of-hooks": "error",
+				"import/no-self-import": "error",
+				"import/no-cycle": ["error", { "ignoreExternal": true }]
+			}
+		},
+		{
+			"files": ["**/*.tsx"],
+			"rules": {
+				"horizons/no-unicode-escapes-in-jsx": "warn"
+			}
+		},
+		{
+			"files": ["src/**/*.{ts,tsx}"],
+			"rules": {
+				"horizons/no-restricted-syntax": [
+					"error",
+					{
+						"selector": "CallExpression[callee.property.name=/^toLocale(Date|Time)String$/]:matches([arguments.length<2], [arguments.0.type='Identifier'][arguments.0.name='undefined'], [arguments.0.value='default'])",
+						"message": "toLocaleDateString/toLocaleTimeString without an explicit locale (not undefined or 'default') and options renders differently on the server (UTC, fixed locale) and in the visitor's browser, causing a hydration mismatch. For server-rendered output pass a locale AND timeZone, e.g. date.toLocaleDateString('en-US', { timeZone: 'UTC', dateStyle: 'medium' }). In client-only code (effects, event handlers) that should use the visitor's zone, still pass a locale and options — just omit timeZone, e.g. date.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }). See vault skill react-router-framework-mode/references/hydration.md."
+					},
+					{
+						"selector": "CallExpression[callee.property.name='toLocaleString']:matches([arguments.length=0], [arguments.0.type='Identifier'][arguments.0.name='undefined'], [arguments.0.value='default'])",
+						"message": "toLocaleString without an explicit locale (not undefined or 'default') depends on the runtime locale and timezone, which differ between the server (UTC) and the visitor's browser and cause a hydration mismatch. Pass an explicit locale — and a timeZone when formatting server-rendered dates. See vault skill react-router-framework-mode/references/hydration.md."
+
+					},
+					{
+						"selector": ":matches(CallExpression[callee.property.name=/^(getList|getFullList|getFirstListItem|listRecords|subscribe)$/] > ObjectExpression > Property[key.name='filter'] > .value, CallExpression[callee.property.name='getFirstListItem'] > .arguments:first-child, CallExpression[callee.property.name=/^(getList|getFullList|getFirstListItem|listRecords|subscribe)$/] > ObjectExpression > Property[key.name='filter'] > TSAsExpression > .expression):matches(TemplateLiteral[expressions.length>0], BinaryExpression[operator='+'])",
+						"message": "Do not build a PocketBase filter by interpolating or concatenating values: a request value such as a URL slug can rewrite the filter, and pocketbaseAdmin bypasses collection rules, so it could read any record in any collection. Bind values as parameters instead: pocketbaseAdmin.filter('slug = {:slug}', { slug }) on the server, or pocketbaseClient.filter(...) in the browser. See vault skill react-router-framework-mode/references/api-routes.md."
+					}
+				]
+			}
+		}
+	]
+}
